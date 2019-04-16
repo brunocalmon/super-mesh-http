@@ -14,7 +14,7 @@ const {
   isNotNilOrEmpty,
   isNilOrEmpty,
   forEachObjIndexed
-} = require("../../utils/utilFunctions");
+} = require("./utils/utilFunctions");
 
 module.exports = client => async (alias, query) => {
   try {
