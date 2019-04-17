@@ -4,13 +4,8 @@ const client = require("superagent");
 const meshService = require("./superMeshHttpService");
 const meshHttp = require("./superMeshHttp");
 
-module.exports = () => {
-  const mesh = meshHttp(client);
-  const service = meshService(mesh);
-  return service;
-};
+exports.superMeshHttp = meshService(meshHttp(client));
 
-module.exports = customizedMeshHttp => {
-  const service = meshService(customizedMeshHttp);
-  return service;
+exports.superMeshHttpWithCustomClient = customizedMeshHttp => {
+  return meshService(customizedMeshHttp);
 };
