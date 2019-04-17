@@ -1,10 +1,12 @@
 {
   "name": "super-mesh-http",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "This package provide features to perform multiple requests by chainning them with previous responses",
   "main": "main/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test-tape --init-version='0.0.0'",
+    "test-tape": "tape -r @babel/register test/**/*.js test/*.js | tap-summary",
+    "build": "npm run test && rm -rf build && babel main --out-dir build"
   },
   "keywords": [
     "http",
@@ -19,5 +21,17 @@
     "ramda": "^0.25.0",
     "superagent": "^3.8.3",
     "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.5",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.1.5",
+    "@babel/register": "^7.0.0",
+    "tap-spec": "^5.0.0",
+    "tape": "^4.9.1",
+    "faucet": "0.0.1",
+    "tap-prettify": "0.0.2",
+    "tap-summary": "4.0.0"
   }
 }

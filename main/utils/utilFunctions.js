@@ -131,3 +131,4 @@ module.exports.dropLast = _dropLast;
 module.exports.join = _join;
 module.exports.gt = _gt;
 module.exports.pipe = R.pipe;
+module.exports.lastIndexOf = R.lastIndexOf;

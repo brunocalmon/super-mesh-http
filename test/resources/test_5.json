@@ -1,0 +1,29 @@
+{
+    "test_5": {
+      "details": {
+        "success": true,
+        "status": 200
+      },
+      "headers": {
+        "location": "XPTO5",
+        "accept": "application/json"
+      },
+      "body": {
+        "id": "1234567",
+        "items": [
+          {
+            "id": "item_1.5"
+          },
+          {
+            "id": "item_2.5"
+          },
+          {
+            "id": "item_3.5"
+          },
+          {
+            "id": "item_4.5"
+          }
+        ]
+      }
+    }
+  }

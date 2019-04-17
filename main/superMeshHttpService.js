@@ -21,7 +21,9 @@ const {
   mapObjIndexed,
   toPairs,
   merge,
-  flatten
+  flatten,
+  has,
+  append
 } = require("./utils/utilFunctions");
 
 const childResourceProcessor = require("./handlers/childResourceProcessor/childResourceProcessor");
@@ -58,7 +60,22 @@ module.exports = superMashHttp => async queries => {
 };
 
 const chainedResponsesToObj = chainedResponses => {
-  return reduce((acc, curr) => merge(acc, curr), {}, chainedResponses);
+  return reduce(
+    (acc, curr) => {
+      const key = head(keys(curr));
+      if (has(head(keys(curr)))(acc)) {
+        const value = path(acc, key);
+        if (is(Array, value)) {
+          return assoc(key, append(path(curr, key), value), acc);
+        }
+        const valueToList = append(value, []);
+        return assoc(key, append(path(curr, key), valueToList), acc);
+      }
+      return merge(acc, curr);
+    },
+    {},
+    chainedResponses
+  );
 };
 
 const makeGraph = queries => {

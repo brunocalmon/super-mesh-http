@@ -1,0 +1,30 @@
+{
+    "test_4": {
+      "details": {
+        "success": true,
+        "status": 200
+      },
+      "headers": {
+        "location": "XPTO4",
+        "accept": "application/json"
+      },
+      "body": {
+        "id": "123456",
+        "next": "1234567",
+        "items": [
+          {
+            "id": "item_1.4"
+          },
+          {
+            "id": "item_2.4"
+          },
+          {
+            "id": "item_3.4"
+          },
+          {
+            "id": "item_4.4"
+          }
+        ]
+      }
+    }
+  }
