@@ -1,6 +1,6 @@
 {
   "name": "super-mesh-http",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "This package provide features to perform multiple requests by chainning them with previous responses",
   "main": "main/main.js",
   "scripts": {
@@ -33,5 +33,6 @@
     "faucet": "0.0.1",
     "tap-prettify": "0.0.2",
     "tap-summary": "4.0.0"
-  }
+  },
+  "homepage": "https://github.com/brunocalmon/super-mesh-http/"
 }
