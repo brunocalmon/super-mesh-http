@@ -115,6 +115,30 @@ exports.items = () => {
   );
 };
 
+exports.items2 = () => {
+  const alias = "items";
+  const method = "get";
+  const resource = "http://localhost:8080/item/";
+  const params = {
+    _metadata: {
+      flatten: true
+    },
+    itemId: "{_test_1.body.items.id_}"
+  };
+  const chainedBy = ["test_1"];
+  return querySchema(
+    alias,
+    method,
+    resource,
+    HEADERS,
+    params,
+    {},
+    TIMEOUT,
+    chainedBy,
+    0
+  );
+};
+
 const querySchema = (
   alias,
   method,

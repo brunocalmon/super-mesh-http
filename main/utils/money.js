@@ -1,4 +1,4 @@
-"use-strict";
+"use strict";
 
 const roundFactor = Math.pow(10, 2);
 const R = require("ramda");

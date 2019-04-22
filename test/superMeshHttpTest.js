@@ -9,7 +9,15 @@ const {
   isNotNilOrEmpty,
   path
 } = require("./../main/utils/utilFunctions");
-const { test_1, test_2, test_3, test_4, test_5, items } = require("./queriesMock");
+const {
+  test_1,
+  test_2,
+  test_3,
+  test_4,
+  test_5,
+  items,
+  items2
+} = require("./queriesMock");
 
 const before = () => {
   return superMeshHttpWithCustomClient(superMesHttpMock());
@@ -44,11 +52,7 @@ test("test_chained_get_completing_the_next_requests_values", async assert => {
 test("test_interpolation_request_from_a_list_response", async assert => {
   const superMeshHttp = before();
   try {
-    const chainedQueries = appendAll(
-      [],
-      test_1(),
-      items()
-    );
+    const chainedQueries = appendAll([], test_1(), items());
 
     const response = await superMeshHttp(chainedQueries);
 
@@ -58,6 +62,25 @@ test("test_interpolation_request_from_a_list_response", async assert => {
     assert.equal("item_2", path(response, "items", "1", "body", "id"));
     assert.equal("item_3", path(response, "items", "2", "body", "id"));
     assert.equal("item_4", path(response, "items", "3", "body", "id"));
+  } catch (error) {
+    console.log(error);
+  }
+  assert.end();
+});
+
+test("test_interpolation_request_from_a_flattened_list_response", async assert => {
+  const superMeshHttp = before();
+  try {
+    const chainedQueries = appendAll([], test_1(), items2());
+
+    const response = await superMeshHttp(chainedQueries);
+
+    assert.ok(isNotNilOrEmpty(response));
+    assert.equal("123", path(response, "test_1", "body", "id"));
+    assert.equal("item_1", path(response, "items", "body", "0", "id"));
+    assert.equal("item_2", path(response, "items", "body", "1", "id"));
+    assert.equal("item_3", path(response, "items", "body", "2", "id"));
+    assert.equal("item_4", path(response, "items", "body", "3", "id"));
   } catch (error) {
     console.log(error);
   }

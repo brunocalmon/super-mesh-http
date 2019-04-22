@@ -1,4 +1,4 @@
-"use-strict";
+"use strict";
 
 const R = require("ramda");
 const money = require("./money");
@@ -132,3 +132,4 @@ module.exports.join = _join;
 module.exports.gt = _gt;
 module.exports.pipe = R.pipe;
 module.exports.lastIndexOf = R.lastIndexOf;
+module.exports.fromPairs = R.fromPairs;
