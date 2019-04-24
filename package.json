@@ -14,7 +14,7 @@
     "chain"
   ],
   "author": "Bruno Calmon",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "~1.0.1",
     "dateformat": "^3.0.3",
