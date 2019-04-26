@@ -26,7 +26,7 @@ const {
   append
 } = require("./utils/utilFunctions");
 
-const { info, error } = require("./utils/logger")
+const { info, error } = require("./utils/logger");
 
 const childResourceProcessor = require("./handlers/childResourceProcessor/childResourceProcessor");
 const childHeadersProcessor = require("./handlers/childHeadersProcessor/childHeadersProcessor");
@@ -34,7 +34,8 @@ const childParamsProcessor = require("./handlers/childParamsProcessor/childParam
 const childBodyProcessor = require("./handlers/childBodyProcessor/childBodyProcessor");
 const { removeBlank } = require("./handlers/utilProcessor");
 const updateGraph = require("./handlers/graphProcessor/graphProcessor");
-const MalformedQueryError = require("./errors/MalformedQueryError")
+const MalformedQueryError = require("./errors/MalformedQueryError");
+const NoEligibleNodesError = require("./errors/NoEligibleNodesError");
 
 module.exports = superMashHttp => async queries => {
   const graph = makeGraph(queries);
@@ -55,8 +56,22 @@ module.exports = superMashHttp => async queries => {
 
       updateGraph(graph, chainedObj);
       requestResponses = merge(requestResponses, chainedObj);
-      info("Graph updated with responses datas: \n Graph: " + JSON.stringify(graph) + "\n requestResponses: " + JSON.stringify(requestResponses) + "\n");
+      error(
+        "Graph updated with responses datas: \n Graph: " +
+          JSON.stringify(graph) +
+          "\n requestResponses: " +
+          JSON.stringify(requestResponses) +
+          "\n"
+      );
     } catch (err) {
+      error(
+        `Error occuried: \n graph: ${JSON.stringify(
+          graph
+        )} \n requestResponses: ${JSON.stringify(requestResponses)}`
+      );
+      if (err.status === 500) {
+        throw err;
+      }
       return err;
     }
   }
@@ -120,25 +135,34 @@ const findChildren = (alias, queries) => {
 
 const validateQuery = query => {
   let erroList = [];
-  if (not(has('alias')(query) && isNotNilOrEmpty(path(query, 'alias')))) {
-    erroList = append({
-      field: 'alias',
-      message: "alias field is required"
-    }, erroList);
+  if (not(has("alias")(query) && isNotNilOrEmpty(path(query, "alias")))) {
+    erroList = append(
+      {
+        field: "alias",
+        message: "alias field is required"
+      },
+      erroList
+    );
   }
 
-  if (not(has('method')(query) && isNotNilOrEmpty(path(query, 'method')))) {
-    erroList = append({
-      field: 'method',
-      message: "method field is required"
-    }, erroList);
+  if (not(has("method")(query) && isNotNilOrEmpty(path(query, "method")))) {
+    erroList = append(
+      {
+        field: "method",
+        message: "method field is required"
+      },
+      erroList
+    );
   }
 
-  if (not(has('resource')(query) && isNotNilOrEmpty(path(query, 'resource')))) {
-    erroList = append({
-      field: 'resource',
-      message: "resource field is required"
-    }, erroList);
+  if (not(has("resource")(query) && isNotNilOrEmpty(path(query, "resource")))) {
+    erroList = append(
+      {
+        field: "resource",
+        message: "resource field is required"
+      },
+      erroList
+    );
   }
 
   if (isNotNilOrEmpty(erroList)) {
@@ -159,7 +183,14 @@ const processingNodes = graph => {
 };
 
 const getEligibles = graph => {
-  return filter(node => isEligible(node, graph), graph);
+  const eligibles = filter(node => isEligible(node, graph), graph);
+  if (isNilOrEmpty(eligibles)) {
+    throw new NoEligibleNodesError(
+      "There is no eligible node to proceed on graph: " + JSON.stringify(graph),
+      1
+    );
+  }
+  return eligibles;
 };
 
 const isEligible = (currentNode, graph) => {
