@@ -3,6 +3,7 @@
 const test = require("tape");
 const superMesHttpMock = require("./clientMock");
 const { superMeshHttpWithCustomClient } = require("./../main/main");
+const { info } = require("./../main/utils/logger");
 const {
   append,
   forEach,
@@ -16,7 +17,9 @@ const {
   test_4,
   test_5,
   items,
-  items2
+  items2,
+  failed_test,
+  test_without_all_optional_fields
 } = require("./queriesMock");
 
 const before = () => {
@@ -44,7 +47,7 @@ test("test_chained_get_completing_the_next_requests_values", async assert => {
     assert.equal("123456", path(response, "test_4", "body", "id"));
     assert.equal("1234567", path(response, "test_5", "body", "id"));
   } catch (error) {
-    console.log(error);
+    info(error);
   }
   assert.end();
 });
@@ -63,7 +66,7 @@ test("test_interpolation_request_from_a_list_response", async assert => {
     assert.equal("item_3", path(response, "items", "2", "body", "id"));
     assert.equal("item_4", path(response, "items", "3", "body", "id"));
   } catch (error) {
-    console.log(error);
+    info(error);
   }
   assert.end();
 });
@@ -82,7 +85,32 @@ test("test_interpolation_request_from_a_flattened_list_response", async assert =
     assert.equal("item_3", path(response, "items", "body", "2", "id"));
     assert.equal("item_4", path(response, "items", "body", "3", "id"));
   } catch (error) {
-    console.log(error);
+    info(error);
+  }
+  assert.end();
+});
+
+test("test_query_missing_alias_resource_method", async assert => {
+  const superMeshHttp = before();
+  try {
+    const chainedQueries = appendAll([], failed_test());
+
+    assert.throws(await superMeshHttp(chainedQueries));
+  } catch (error) {
+    info(error);
+  }
+  assert.end();
+});
+
+test("test_query_missing_optional_fields", async assert => {
+  const superMeshHttp = before();
+  try {
+    const chainedQueries = appendAll([], test_without_all_optional_fields());
+
+    const response = await superMeshHttp(chainedQueries);
+    assert.equal("123", path(response, "test_1", "body", "id"));
+  } catch (error) {
+    info(error);
   }
   assert.end();
 });

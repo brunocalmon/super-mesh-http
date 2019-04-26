@@ -1,6 +1,6 @@
 {
   "name": "super-mesh-http",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "This package provide features to perform multiple requests by chainning them with previous responses",
   "main": "main/main.js",
   "scripts": {
@@ -16,7 +16,6 @@
   "author": "Bruno Calmon",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "~1.0.1",
     "dateformat": "^3.0.3",
     "ramda": "^0.25.0",
     "superagent": "^3.8.3",

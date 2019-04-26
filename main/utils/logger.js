@@ -32,10 +32,9 @@ const createElasticFile = () => {
 };
 
 const getLogPath = () => {
-  if (profile.profileName() === "test") {
-    return process.env.PWD;
-  }
-  return process.env.LOG_FILE_PATH + process.env.LOG_FILE_NAME;
+  const path = process.env.LOG_FILE_PATH === undefined ? "." : process.env.LOG_FILE_PATH;
+  const name = process.env.LOG_FILE_PATH === undefined ? "supermeshhttp.log" : process.env.LOG_FILE_NAME;
+  return path + "/" + name;
 };
 
 const createConsole = () => {
@@ -47,30 +46,37 @@ const createConsole = () => {
 const mountTransports = () => {
   const transports = [];
 
-  if (profile.isNotProduction()) {
     transports.push(createConsole());
-  }
-  transports.push(createElasticFile());
-
+    transports.push(createElasticFile());
   return transports;
 };
 
 const logger = createLogger({
-  level: "info",
-  transports: mountTransports()
-});
+      level: "info",
+      transports: mountTransports()
+    });
 
 const info = (message, ...optionalParams) => {
-  logger.info(message, optionalParams);
+  if (logEnabled()) {
+    logger.info(message, optionalParams);
+  }
 };
 
 const warn = (message, ...optionalParams) => {
-  logger.warn(message, optionalParams);
+  if (logEnabled()) {
+    logger.warn(message, optionalParams);
+  }
 };
 
 const error = (message, ...optionalParams) => {
-  logger.error(message, optionalParams);
+  if (logEnabled()) {
+    logger.error(message, optionalParams);
+  }
 };
+
+const logEnabled = () => {
+  return process.env.SUPER_MESH_HTTP_LOG_ENABLED === "true" || profile.isNotProduction()
+}
 
 module.exports = {
   info,

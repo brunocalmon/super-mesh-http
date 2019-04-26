@@ -26,12 +26,15 @@ const {
   append
 } = require("./utils/utilFunctions");
 
+const { info, error } = require("./utils/logger")
+
 const childResourceProcessor = require("./handlers/childResourceProcessor/childResourceProcessor");
 const childHeadersProcessor = require("./handlers/childHeadersProcessor/childHeadersProcessor");
 const childParamsProcessor = require("./handlers/childParamsProcessor/childParamsProcessor");
 const childBodyProcessor = require("./handlers/childBodyProcessor/childBodyProcessor");
 const { removeBlank } = require("./handlers/utilProcessor");
 const updateGraph = require("./handlers/graphProcessor/graphProcessor");
+const MalformedQueryError = require("./errors/MalformedQueryError")
 
 module.exports = superMashHttp => async queries => {
   const graph = makeGraph(queries);
@@ -52,6 +55,7 @@ module.exports = superMashHttp => async queries => {
 
       updateGraph(graph, chainedObj);
       requestResponses = merge(requestResponses, chainedObj);
+      info("Graph updated with responses datas: \n Graph: " + JSON.stringify(graph) + "\n requestResponses: " + JSON.stringify(requestResponses) + "\n");
     } catch (err) {
       return err;
     }
@@ -79,6 +83,7 @@ const chainedResponsesToObj = chainedResponses => {
 };
 
 const makeGraph = queries => {
+  info("Creating graph throught queries: " + JSON.stringify(queries));
   const graph = reduce(
     (acc, query) => {
       const node = makeNode(query, queries);
@@ -88,10 +93,12 @@ const makeGraph = queries => {
     {},
     queries
   );
+  info("Created graph: " + JSON.stringify(graph));
   return graph;
 };
 
 const makeNode = (query, queries) => {
+  validateQuery(query);
   const node = {};
   const nodeKey = path(query, "alias");
   const nodeBody = {
@@ -109,6 +116,36 @@ const findChildren = (alias, queries) => {
     queries
   );
   return map(child => path(child, "alias"), children);
+};
+
+const validateQuery = query => {
+  let erroList = [];
+  if (not(has('alias')(query) && isNotNilOrEmpty(path(query, 'alias')))) {
+    erroList = append({
+      field: 'alias',
+      message: "alias field is required"
+    }, erroList);
+  }
+
+  if (not(has('method')(query) && isNotNilOrEmpty(path(query, 'method')))) {
+    erroList = append({
+      field: 'method',
+      message: "method field is required"
+    }, erroList);
+  }
+
+  if (not(has('resource')(query) && isNotNilOrEmpty(path(query, 'resource')))) {
+    erroList = append({
+      field: 'resource',
+      message: "resource field is required"
+    }, erroList);
+  }
+
+  if (isNotNilOrEmpty(erroList)) {
+    const malformedQueryError = new MalformedQueryError(erroList, 1);
+    error(malformedQueryError);
+    throw malformedQueryError;
+  }
 };
 
 const processingNodes = graph => {
@@ -237,6 +274,7 @@ const processSingleQuery = (clonedNode, ancestorResponses) => {
 };
 
 const performChainedRequests = (processedNodes, superMeshHttp) => {
+  info("Calling processed nodes: " + JSON.stringify(processedNodes));
   const nodesToCall = toPairs(processedNodes);
 
   const allPromisesResponses = map(node => {

@@ -1,6 +1,37 @@
 const TIMEOUT = { response: 5000, deadline: 5000 };
 const HEADERS = { "Content-Type": "application/json" };
 
+exports.failed_test = () => {
+  const alias = "";
+  const method = "";
+  const resource = "";
+  const params = {};
+  const chainedBy = [];
+  return querySchema(
+    alias,
+    method,
+    resource,
+    HEADERS,
+    params,
+    {},
+    TIMEOUT,
+    chainedBy,
+    0
+  );
+};
+
+exports.test_without_all_optional_fields = () => {
+  const alias = "test_1";
+  const method = "get";
+  const resource = "http://localhost:8080/test_1/123";
+  return {
+    alias: "test_1",
+    method: "get",
+    resource: "http://localhost:8080/test_1/123",
+  };
+};
+
+
 exports.test_1 = () => {
   const alias = "test_1";
   const method = "get";
