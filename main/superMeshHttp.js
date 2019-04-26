@@ -52,7 +52,8 @@ module.exports = client => async (alias, query) => {
     const body = {
       details: {
         success: false,
-        status: response.status
+        status: path(err, "response", "status"),
+        message: path(err, "message"),
       },
       err: err
     };
