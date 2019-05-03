@@ -32,8 +32,8 @@ const createElasticFile = () => {
 };
 
 const getLogPath = () => {
-  const path = process.env.LOG_FILE_PATH === undefined ? "." : process.env.LOG_FILE_PATH;
-  const name = process.env.LOG_FILE_PATH === undefined ? "supermeshhttp.log" : process.env.LOG_FILE_NAME;
+  const path = process.env.SUPER_MESH_HTTP_LOG_FILE_PATH === undefined ? "." : process.env.SUPER_MESH_HTTP_LOG_FILE_PATH;
+  const name = process.env.SUPER_MESH_HTTP_LOG_FILE_NAME === undefined ? "supermeshhttp.log" : process.env.SUPER_MESH_HTTP_LOG_FILE_NAME;
   return path + "/" + name;
 };
 
@@ -75,7 +75,7 @@ const error = (message, ...optionalParams) => {
 };
 
 const logEnabled = () => {
-  return process.env.SUPER_MESH_HTTP_LOG_ENABLED === "true" || profile.isNotProduction()
+  return process.env.SUPER_MESH_HTTP_LOG_ENABLED === "true"
 }
 
 module.exports = {
