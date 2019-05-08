@@ -14,7 +14,10 @@ const {
   projectObj,
   merge,
   is,
-  map
+  map,
+  isNotNilOrEmpty,
+  equals,
+  gt
 } = require("./../../utils/utilFunctions");
 
 const { processLists } = require("./../utilProcessor");
@@ -37,6 +40,23 @@ const updateStatus = (num, key) => requestResponses => {
       num["status"] = "FAILURE";
     } else {
       num["status"] = "COMPLETED";
+    }
+  }
+
+  if (
+    not(equals(path(num, "status"), "FAILURE")) &&
+    isNotNilOrEmpty(path(num, "query", "chainedBy"))
+  ) {
+    let failureParents = 0;
+    forEach(parent => {
+      if (has(parent)(requestResponses)) {
+        if (not(path(requestResponses, parent, "details", "success"))) {
+          failureParents++;
+        }
+      }
+    }, path(num, "query", "chainedBy"));
+    if (gt(failureParents, 0)) {
+      num["status"] = "FAILURE";
     }
   }
 };
