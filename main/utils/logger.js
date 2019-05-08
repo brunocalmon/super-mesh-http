@@ -4,18 +4,19 @@ const winston = require("winston");
 const { createLogger, format } = winston;
 const dateFormat = require("dateformat");
 const profile = require("./profile");
+const { path, equals, isNilOrEmpty } = require("./utilFunctions");
 
 const logAsJson = winston.format(info => {
   const logContent = {
     date: dateFormat(new Date(), "dd/mm/yyyy HH:MM:ss.l"),
-    application: process.env.npm_package_name,
+    application: path(process, "env", "npm_package_name"),
     environment: profile.profileName(),
     tid: "",
-    log_level: info.level,
+    log_level: path(info, "level"),
     thread_name: "",
     class: "",
-    log_message: info.message,
-    version: `${process.env.npm_config_init_version}`
+    log_message: path(info, "message"),
+    version: `${path(process, "env", "npm_config_init_version")}`
   };
 
   return logContent;
@@ -32,9 +33,9 @@ const createElasticFile = () => {
 };
 
 const getLogPath = () => {
-  const path = process.env.SUPER_MESH_HTTP_LOG_FILE_PATH === undefined ? "." : process.env.SUPER_MESH_HTTP_LOG_FILE_PATH;
-  const name = process.env.SUPER_MESH_HTTP_LOG_FILE_NAME === undefined ? "supermeshhttp.log" : process.env.SUPER_MESH_HTTP_LOG_FILE_NAME;
-  return path + "/" + name;
+  const pathDir = isNilOrEmpty(path(process, "env", "LOG_FILE_PATH")) ? "." : path(process, "env", "LOG_FILE_PATH");
+  const name = isNilOrEmpty(path(process, "env", "LOG_FILE_NAME")) ? "supermeshhttp.log" : path("process", "env", "LOG_FILE_NAME");
+  return pathDir + "/" + name;
 };
 
 const createConsole = () => {
@@ -75,7 +76,7 @@ const error = (message, ...optionalParams) => {
 };
 
 const logEnabled = () => {
-  return process.env.SUPER_MESH_HTTP_LOG_ENABLED === "true"
+  return equals(path(process, "env", "SUPER_MESH_HTTP_LOG_ENABLED"), "true");
 }
 
 module.exports = {

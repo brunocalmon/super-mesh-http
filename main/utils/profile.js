@@ -1,31 +1,21 @@
 "use strict";
 
+const { path, equals, not } = require("./utilFunctions");
+
 exports.isProduction = () => {
-  return (
-    process.env.npm_config_production == "true" &&
-    process.env.npm_config_production === "true"
-  );
+  return equals(path(process, "env", "NODE_ENV"), "prod");
 };
 
 exports.isNotProduction = () => {
-  return (
-    process.env.npm_config_production != "true" &&
-    process.env.npm_config_production !== "true"
-  );
+  return not(equals(path(process, "env", "NODE_ENV"), "prod"));
 };
 
 exports.profileName = () => {
-  if (
-    process.env.npm_config_production == "true" &&
-    process.env.npm_config_production === "true"
-  ) {
+  if (equals(path(process, "env", "NODE_ENV"), "prod")) {
     return "production";
   }
 
-  if (
-    process.env.npm_config_dev == "true" &&
-    process.env.npm_config_dev === "true"
-  ) {
+  if (equals(path(process, "env", "NODE_ENV"), "dev")) {
     return "development";
   }
 
