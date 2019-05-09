@@ -1,6 +1,8 @@
 "use strict";
 
 const {
+  toString,
+  path,
   map,
   and,
   match,
@@ -212,8 +214,21 @@ const processFlattenQueryLists = (toFlattenList, query) => {
         }
         return objValue;
       }, pathOfList(query, listPath["listPath"]));
-
+      const isNoKey = equals(
+        toString(path(flattened, "_metadata", "noKey")),
+        "true"
+      );
       flat = append(dissoc("_metadata", flattened), flat);
+
+      const processNoKey = value => {
+        flat = append(value, flat);
+      };
+
+      if (isNoKey) {
+        const flatNoKey = flat;
+        flat = [];
+        map(x => processNoKey(x), head(flatNoKey));
+      }
     }
     newQuery = assocPath(newQuery, listPath["listPath"], flat);
   }, toFlattenList);
