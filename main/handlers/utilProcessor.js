@@ -89,9 +89,17 @@ exports.removeBlank = object => {
 
 const _removeBlank = object => {
   let newObject = {};
+
   forEachObjIndexed((num, key) => {
     if (and(is(Object, num), is(Array, num))) {
-      const array = map(_removeBlank, num);
+      const array = map(n => {
+        if (is(Object, n)) {
+          return _removeBlank(n);
+        }
+        if (isNotNilOrEmpty(n)) {
+          return n;
+        }
+      }, num);
       newObject = assoc(key, array, newObject);
     } else if (and(is(Object, num), not(is(Array, num)))) {
       const n = _removeBlank(num);
