@@ -1,6 +1,6 @@
 {
   "name": "super-mesh-http",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "This package provide features to perform multiple requests by chainning them with previous responses",
   "main": "main/main.js",
   "scripts": {
