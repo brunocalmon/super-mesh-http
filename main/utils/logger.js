@@ -24,7 +24,7 @@ const logAsJson = winston.format(info => {
 
 const createElasticFile = () => {
   return new winston.transports.File({
-    zippedArchive: true,
+    zippedArchive: false,
     format: format.combine(logAsJson(), format.json()),
     filename: getLogPath(),
     maxsize: 10485760,
@@ -33,8 +33,10 @@ const createElasticFile = () => {
 };
 
 const getLogPath = () => {
-  const pathDir = isNilOrEmpty(path(process, "env", "LOG_FILE_PATH")) ? "." : path(process, "env", "LOG_FILE_PATH");
-  const name = isNilOrEmpty(path(process, "env", "LOG_FILE_NAME")) ? "supermeshhttp.log" : path("process", "env", "LOG_FILE_NAME");
+  const pathDir = isNilOrEmpty(path(process, "env", "LOG_FILE_PATH"))
+    ? "."
+    : path(process, "env", "LOG_FILE_PATH");
+  const name = "supermeshhttp.log";
   return pathDir + "/" + name;
 };
 
@@ -47,15 +49,15 @@ const createConsole = () => {
 const mountTransports = () => {
   const transports = [];
 
-    transports.push(createConsole());
-    transports.push(createElasticFile());
+  transports.push(createConsole());
+  transports.push(createElasticFile());
   return transports;
 };
 
 const logger = createLogger({
-      level: "info",
-      transports: mountTransports()
-    });
+  level: "info",
+  transports: mountTransports()
+});
 
 const info = (message, ...optionalParams) => {
   if (logEnabled()) {
@@ -77,7 +79,7 @@ const error = (message, ...optionalParams) => {
 
 const logEnabled = () => {
   return equals(path(process, "env", "SUPER_MESH_HTTP_LOG_ENABLED"), "true");
-}
+};
 
 module.exports = {
   info,
