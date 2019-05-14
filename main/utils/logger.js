@@ -33,9 +33,11 @@ const createElasticFile = () => {
 };
 
 const getLogPath = () => {
-  const pathDir = isNilOrEmpty(path(process, "env", "LOG_FILE_PATH"))
+  const pathDir = isNilOrEmpty(
+    path(process, "env", "SUPER_MESH_HTTP_LOG_FILE_PATH")
+  )
     ? "."
-    : path(process, "env", "LOG_FILE_PATH");
+    : path(process, "env", "SUPER_MESH_HTTP_LOG_FILE_PATH");
   const name = "supermeshhttp.log";
   return pathDir + "/" + name;
 };
