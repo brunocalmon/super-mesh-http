@@ -56,7 +56,7 @@ module.exports = superMashHttp => async queries => {
 
       updateGraph(graph, chainedObj);
       requestResponses = merge(requestResponses, chainedObj);
-      error(
+      info(
         "Graph updated with responses datas: \n Graph: " +
           JSON.stringify(graph) +
           "\n requestResponses: " +
