@@ -3,7 +3,6 @@
 const { info, error } = require("./utils/logger");
 const {
   path,
-  toString,
   equals,
   assoc,
   filter,
@@ -16,6 +15,8 @@ const {
   forEachObjIndexed
 } = require("./utils/utilFunctions");
 
+const TIME_SCALE = "miliseconds";
+
 module.exports = client => async (alias, query) => {
   try {
     info(`Acessando servicos encadeados com a query ${toString(query)}`);
@@ -26,6 +27,7 @@ module.exports = client => async (alias, query) => {
 
     let queryParams = stringfyToUrlPattern(objParams, listParams);
 
+    const beginTime = process.hrtime();
     const response = await client(
       path(query, "method"),
       path(query, "resource")
@@ -36,6 +38,12 @@ module.exports = client => async (alias, query) => {
       .send(path(query, "body"))
       .timeout(path(query, "timeout"))
       .retry(path(query, "retry"));
+
+    info(
+      `Time to make ${alias}'s request in ${TIME_SCALE}: ${getEndTime(
+        beginTime
+      )}`
+    );
 
     const body = {
       details: {
@@ -53,7 +61,7 @@ module.exports = client => async (alias, query) => {
       details: {
         success: false,
         status: path(err, "response", "status"),
-        message: path(err, "message"),
+        message: path(err, "message")
       },
       err: err
     };
@@ -125,4 +133,8 @@ const stringfyToUrlPattern = (objParams, listParams) => {
   } else {
     return "";
   }
+};
+
+const getEndTime = startTime => {
+  return process.hrtime(startTime)[1] / 1000000;
 };

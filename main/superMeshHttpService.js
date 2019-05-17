@@ -37,24 +37,54 @@ const updateGraph = require("./handlers/graphProcessor/graphProcessor");
 const MalformedQueryError = require("./errors/MalformedQueryError");
 const NoEligibleNodesError = require("./errors/NoEligibleNodesError");
 
+const TIME_SCALE = "miliseconds";
+
 module.exports = superMashHttp => async queries => {
+  const beginGraphTime = process.hrtime();
   const graph = makeGraph(queries);
+  info(
+    `Time to make a graph in ${TIME_SCALE}: ${getEndTime(
+      process.hrtime(beginGraphTime)
+    )}`
+  );
+
   let requestResponses = {};
   while (processingNodes(graph)) {
     try {
       const eligibleNodes = getEligibles(graph);
+
+      const beginProcessNodeTime = process.hrtime();
       const processedNodes = processNodeForRequest(
         eligibleNodes,
         requestResponses
       );
+      info(
+        `Time to make a process node in ${TIME_SCALE}: ${getEndTime(
+          process.hrtime(beginProcessNodeTime)
+        )}`
+      );
+
+      const beginChainedRequestsTime = process.hrtime();
       const chainedResponses = await performChainedRequests(
         processedNodes,
         superMashHttp
       );
+      info(
+        `Time to make a requests in ${TIME_SCALE}: ${getEndTime(
+          process.hrtime(beginChainedRequestsTime)
+        )}`
+      );
 
       const chainedObj = chainedResponsesToObj(chainedResponses);
 
+      const beginUpdateGraphTime = process.hrtime();
       updateGraph(graph, chainedObj);
+      info(
+        `Time to make a update graph in ${TIME_SCALE}: ${getEndTime(
+          process.hrtime(beginUpdateGraphTime)
+        )}`
+      );
+
       requestResponses = merge(requestResponses, chainedObj);
       info(
         "Graph updated with responses datas: \n Graph: " +
@@ -319,4 +349,8 @@ const performChainedRequests = (processedNodes, superMeshHttp) => {
   return Promise.all(flatten(allPromisesResponses)).then(
     responses => responses
   );
+};
+
+const getEndTime = startTime => {
+  return process.hrtime(startTime)[1] / 1000000;
 };
